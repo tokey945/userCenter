@@ -10,6 +10,7 @@ server:
   port: 8080
 mybatis-plus:
   configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
     map-underscore-to-camel-case: false
   global-config:
     db-config:
