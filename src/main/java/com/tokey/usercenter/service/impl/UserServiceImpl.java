@@ -3,6 +3,7 @@ package com.tokey.usercenter.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tokey.usercenter.model.domain.User;
+import com.tokey.usercenter.model.domain.request.UserRegisterRequest;
 import com.tokey.usercenter.service.UserService;
 import com.tokey.usercenter.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private static final String SALT = "tokey";
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(UserRegisterRequest userRegisterRequest) {
+
+        String userAccount = userRegisterRequest.getUserAccount();
+        String userPassword = userRegisterRequest.getUserPassword();
+        String checkPassword = userRegisterRequest.getCheckPassword();
+        String planetCode = userRegisterRequest.getPlanetCode();
         //校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
             //todo 修改自定义异常
             return -1;
         }
@@ -49,6 +55,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!userPassword.equals(checkPassword)) {
             return -1;
         }
+        if (planetCode.length() > 5) {
+            return -1;
+        }
         //账户不能含有特殊字符
         Matcher matcher = Pattern.compile("[`~!@#$^&*()=|{}':;',\\\\[\\\\].<>/?~！@#￥……&*（）――|{}【】‘；：”“'。，、？]").matcher(userAccount);
         if (matcher.find()) {
@@ -59,6 +68,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userAccount", userAccount);
         long count = userMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return -1;
+        }
+        //星球编号不能重复
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("planetCode", planetCode);
+        count = userMapper.selectCount(queryWrapper);
         if (count > 0) {
             return -1;
         }
@@ -120,6 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     /**
      * 用户脱敏
+     *
      * @param originUser
      * @return
      */
@@ -136,11 +153,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safetyUser.setUserStatus(originUser.getUserStatus());
         safetyUser.setUserRole(originUser.getUserRole());
         safetyUser.setCreateTime(originUser.getCreateTime());
+        safetyUser.setPlanetCode(originUser.getPlanetCode());
         return safetyUser;
     }
 
     /**
      * 用户注销
+     *
      * @param request
      * @return
      */

@@ -41,8 +41,8 @@ class UserServiceTest {
         user.setPhone("123");
         user.setEmail("123");
 
-        long result = userService.userRegister("tokey", "123456","123456");
-        System.out.println(result);
+//        long result = userService.userRegister("tokey", "123456","123456");
+//        System.out.println(result);
     }
 
     @Test

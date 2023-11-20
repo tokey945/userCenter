@@ -33,11 +33,7 @@ public class UserController {
         if (userRegisterRequest == null) {
             return null;
         }
-        String userAccount = userRegisterRequest.getUserAccount();
-        String userPassword = userRegisterRequest.getUserPassword();
-        String checkPassword = userRegisterRequest.getCheckPassword();
-
-        return userService.userRegister(userAccount, userPassword, checkPassword);
+        return userService.userRegister(userRegisterRequest);
 
     }
 

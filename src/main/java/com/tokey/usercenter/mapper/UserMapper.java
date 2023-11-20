@@ -1,7 +1,7 @@
 package com.tokey.usercenter.mapper;
 
-import com.tokey.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tokey.usercenter.model.domain.User;
 
 /**
 * @author tokey

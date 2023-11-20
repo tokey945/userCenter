@@ -1,7 +1,8 @@
 package com.tokey.usercenter.service;
 
-import com.tokey.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tokey.usercenter.model.domain.User;
+import com.tokey.usercenter.model.domain.request.UserRegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,12 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 public interface UserService extends IService<User> {
     /**
      * 用户注册
-     * @param userAccount
-     * @param userPassword
-     * @param checkPassword
+     * @param userRegisterRequest
      * @return
      */
-    long userRegister(String userAccount, String userPassword, String checkPassword);
+    long userRegister(UserRegisterRequest userRegisterRequest);
 
     /**
      * 用户登陆
