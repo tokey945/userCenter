@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tokey.usercenter.constant.UserConstant.ADMIN_TOLE;
+import static com.tokey.usercenter.constant.UserConstant.ADMIN_ROLE;
 import static com.tokey.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -53,6 +53,22 @@ public class UserController {
         }
         return userService.doLogin(userAccount, userPassword, request);
     }
+    @GetMapping("/current")
+    public User getCurrentUser(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (user == null) {
+            return null;
+        }
+        return userService.getSafetyUser(userService.getById(user.getId()));
+    }
+
+    @PostMapping("/logout")
+    public Integer userLogout(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return userService.userLogOut(request);
+    }
 
     @GetMapping("/search")
     public List<User> searchUsers(String username, HttpServletRequest request) {
@@ -89,7 +105,7 @@ public class UserController {
     private boolean isAdmin(HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
 
-        return user != null && user.getUserRole() == ADMIN_TOLE;
+        return user != null && user.getUserRole() == ADMIN_ROLE;
 
     }
 }

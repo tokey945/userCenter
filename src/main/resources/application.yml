@@ -11,6 +11,8 @@ spring:
     timeout: 86400
 server:
   port: 8080
+  servlet:
+    context-path: /api
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志
