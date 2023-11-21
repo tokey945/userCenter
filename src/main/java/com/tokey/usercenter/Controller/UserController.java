@@ -1,6 +1,9 @@
 package com.tokey.usercenter.Controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tokey.usercenter.common.BaseResponse;
+import com.tokey.usercenter.common.ErrorCode;
+import com.tokey.usercenter.common.ResultUtils;
 import com.tokey.usercenter.model.domain.User;
 import com.tokey.usercenter.model.domain.request.UserLoginRequest;
 import com.tokey.usercenter.model.domain.request.UserRegisterRequest;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,47 +33,48 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Long userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        return userService.userRegister(userRegisterRequest);
+        return ResultUtils.success(userService.userRegister(userRegisterRequest));
 
     }
 
     @PostMapping("/login")
-    public User userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return null;
         }
-        return userService.doLogin(userAccount, userPassword, request);
+        return ResultUtils.success(userService.doLogin(userAccount, userPassword, request));
     }
+
     @GetMapping("/current")
-    public User getCurrentUser(HttpServletRequest request) {
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         if (user == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        return userService.getSafetyUser(userService.getById(user.getId()));
+        return ResultUtils.success(userService.getSafetyUser(userService.getById(user.getId())));
     }
 
     @PostMapping("/logout")
-    public Integer userLogout(HttpServletRequest request) {
+    public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
-            return null;
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        return userService.userLogOut(request);
+        return ResultUtils.success(userService.userLogOut(request));
     }
 
     @GetMapping("/search")
-    public List<User> searchUsers(String username, HttpServletRequest request) {
+    public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
         if (!isAdmin(request)) {
-            return new ArrayList<>();
+            return ResultUtils.error(ErrorCode.NO_AUTH);
         }
 
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -78,18 +83,18 @@ public class UserController {
             queryWrapper.like("username", username);
         }
         List<User> userList = userService.list(queryWrapper);
-        return userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList());
+        return ResultUtils.success(userList.stream().map(user -> userService.getSafetyUser(user)).collect(Collectors.toList()));
     }
 
     @PostMapping("/delete")
-    public boolean deleteUser(@RequestBody long id, HttpServletRequest request) {
+    public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
         if (!isAdmin(request)) {
-            return false;
+            return null;
         }
         if (id <= 0) {
-            return false;
+            return null;
         }
-        return userService.removeById(id);
+        return ResultUtils.success(userService.removeById(id));
     }
 
     /**
@@ -98,7 +103,7 @@ public class UserController {
      * @param request
      * @return
      */
-    private boolean isAdmin(HttpServletRequest request) {
+    private Boolean isAdmin(HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
 
         return user != null && user.getUserRole() == ADMIN_ROLE;
