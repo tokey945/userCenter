@@ -11,6 +11,10 @@ public interface UserConstant {
      */
     String USER_LOGIN_STATE = "userLoginState";
 
+    /**
+     * 默认的用户头像
+     */
+    String DEFAULT_AVATAR = "https://cdn-static.sspai.com/ui/otter_avatar_placeholder.png";
     // ------- 权限 -------
     /**
      * 默认权限

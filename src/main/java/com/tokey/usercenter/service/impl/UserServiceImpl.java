@@ -7,6 +7,7 @@ import com.tokey.usercenter.model.domain.request.UserRegisterRequest;
 import com.tokey.usercenter.service.UserService;
 import com.tokey.usercenter.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.tokey.usercenter.constant.UserConstant.DEFAULT_AVATAR;
 import static com.tokey.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -84,6 +86,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
+        user.setPlanetCode(userRegisterRequest.getPlanetCode());
+        //设置默认头像和用户名
+        user.setAvatarUrl(DEFAULT_AVATAR);
+        user.setUsername(RandomStringUtils.randomAlphabetic(6));
         boolean result = this.save(user);
         if (!result) {
             return -1;
