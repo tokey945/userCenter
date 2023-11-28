@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://81.69.163.141:3306/user_center
+    username: tokey
+    password: Tokey@123
+  # session 失效时间
+  session:
+    timeout: 86400
